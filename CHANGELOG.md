@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pruned mobile bundle targets and removed unnecessary iOS/Android icon assets, keeping repository footprint streamlined and focused on desktop laptops.
 
 ### Added - 2026-11-23
+- **Security & UI Tooling Setup:**
+  - Installed **Impeccable** (`impeccable.style` v0.1.27) to scan for UI anti-patterns and enforce craft-first design standards.
+  - Installed Trail of Bits security skills (`zeroize-audit`, `audit-context-building`, `codeql`, `sarif-parsing`, `semgrep`).
+  - Installed Tauri 2 deep maintainability and security scanner (`tauri-stinky`).
+  - Authored custom project skill `bytebridge-security-audit` checking path traversal, direct IPv6 link-local network isolation, Noise IK cryptographic hygiene, and Tauri CSP boundaries.
+  - Added project root `deny.toml` configuration for `cargo-deny` with strict license, advisory, and banned crate rules.
 - **Phase 6: Cross-Platform Packaging & Release:**
   - Configured multi-platform desktop release packaging in `src-tauri/tauri.conf.json` for Windows (`nsis`, `msi`) and Linux (`appimage`, `deb`).
   - Upgraded automated GitHub Actions workflow `.github/workflows/ci.yml` with multi-OS compilation, frontend asset bundling, and release packaging draft actions.
