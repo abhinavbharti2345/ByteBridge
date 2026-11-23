@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added end-to-end integration tests in `crates/bytebridge-core/tests/transfer_test.rs` covering single files, multi-file batches, and deep nested directories over simulated direct-link duplex transports.
   - Added interactive `mock-transfer` subcommand to `bytebridge-cli` to demonstrate in-process direct-link transfers with live throughput metrics.
 - **Scalable Architecture & Repository Layout:**
+  - Added [`.graphifyignore`](.graphifyignore) to scope Graphify AST indexing strictly to ByteBridge crates, pruning 2,923 noise nodes from third-party plugins.
   - Authored canonical repository taxonomy guide [`Docs/architecture/repository-layout.md`](Docs/architecture/repository-layout.md) defining strict module boundaries and architectural invariants.
   - Added comprehensive [`.gitignore`](.gitignore) covering Cargo, Vite, Tauri, and ByteBridge temporary staging artifacts.
   - Added [`.github/workflows/ci.yml`](.github/workflows/ci.yml) cross-platform CI matrix testing on `windows-latest` and `ubuntu-latest`.
