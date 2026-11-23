@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - 2026-11-23
+- **Platform Target Alignment:**
+  - Configured Tauri bundle configuration strictly for desktop targets: Windows (`nsis`, `msi`) as 1st priority and Linux (`deb`, `appimage`) as 2nd priority.
+  - Pruned mobile bundle targets and removed unnecessary iOS/Android icon assets, keeping repository footprint streamlined and focused on desktop laptops.
+
 ### Added - 2026-11-23
 - **Phase 3: Hardware Link Analyzer & Redacted Diagnostics:**
   - Implemented 5-tier hardware inspection abstraction in `bytebridge-core::hardware`:
