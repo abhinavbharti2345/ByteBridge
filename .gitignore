@@ -1,0 +1,26 @@
+# Rust build outputs
+/target/
+Cargo.lock
+
+# Operating System & IDE files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# In-flight transfer staging and journals
+.bytebridge-partial*
+.bytebridge-resume*
+*.log
+
+# Internal agent tooling, skills, and graph cache
+.agents/
+skills-lock.json
+graphify-out/
+
+# Internal planning and specification files (kept local)
+Docs/
+plan/
+AGENTS.md

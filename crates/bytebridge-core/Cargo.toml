@@ -1,0 +1,20 @@
+[package]
+name = "bytebridge-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+tokio = { workspace = true }
+serde = { workspace = true }
+postcard = { workspace = true }
+sha2 = { workspace = true }
+blake3 = { workspace = true }
+snow = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.17"
