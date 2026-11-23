@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { PeerDevice } from '../api';
-import { Usb, ShieldCheck, Laptop, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Usb, ShieldCheck, Laptop, Check, AlertTriangle, ArrowRight } from 'lucide-react';
 
 interface SetupWizardProps {
   discoveredPeers: PeerDevice[];
@@ -15,72 +15,92 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({
 }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedPeer, setSelectedPeer] = useState<PeerDevice | null>(null);
-  const [enteredCode, setEnteredCode] = useState('');
+  const [sasDigits, setSasDigits] = useState<string[]>(['', '', '', '', '', '']);
   const [error, setError] = useState<string | null>(null);
+
+  const handleDigitChange = (index: number, val: string) => {
+    const clean = val.replace(/\D/g, '').slice(-1);
+    const next = [...sasDigits];
+    next[index] = clean;
+    setSasDigits(next);
+
+    // Auto-advance
+    if (clean && index < 5) {
+      const nextInput = document.getElementById(`sas-digit-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
 
   const handleSasSubmit = async () => {
     if (!selectedPeer) return;
+    const code = sasDigits.join('');
+    if (code.length !== 6) return;
+
     try {
       setError(null);
-      await onConfirmSas(selectedPeer.fingerprint, enteredCode);
+      await onConfirmSas(selectedPeer.fingerprint, code);
       setStep(3);
     } catch {
-      setError('SAS confirmation code mismatch. Verify both screens display the exact same 6 digits.');
+      setError('Confirmation code mismatch. Verify both screens display matching 6 digits.');
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 max-w-2xl mx-auto h-full text-slate-100">
-      <div className="flex items-center gap-4 mb-8">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 1 ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500'}`}>1</div>
-        <div className={`h-1 w-12 ${step >= 2 ? 'bg-blue-600' : 'bg-slate-800'}`} />
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step >= 2 ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500'}`}>2</div>
-        <div className={`h-1 w-12 ${step >= 3 ? 'bg-blue-600' : 'bg-slate-800'}`} />
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${step === 3 ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-500'}`}>3</div>
+    <div className="flex flex-col items-center justify-center p-8 max-w-xl mx-auto h-full text-[#EDEDED] font-sans antialiased">
+      {/* Quiet Segmented Stepper */}
+      <div className="flex items-center gap-2 mb-8 text-xs font-mono">
+        <span className={step >= 1 ? 'text-[#EDEDED]' : 'text-[#85858B]'}>01 Physical Cable</span>
+        <span className="text-white/10">/</span>
+        <span className={step >= 2 ? 'text-[#EDEDED]' : 'text-[#85858B]'}>02 SAS Pairing</span>
+        <span className="text-white/10">/</span>
+        <span className={step === 3 ? 'text-[#4CC38A]' : 'text-[#85858B]'}>03 Verified</span>
       </div>
 
       {step === 1 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 w-full shadow-2xl flex flex-col items-center text-center">
-          <div className="p-4 bg-blue-500/10 rounded-2xl mb-4 text-blue-400">
-            <Usb className="w-12 h-12" />
+        <div className="bg-[#141415] border border-white/8 rounded-2xl p-7 w-full shadow-xl space-y-6 text-center">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#19191B] border border-white/6 flex items-center justify-center text-blue-400">
+            <Usb className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold mb-2">Connect Your USB-C Cable</h2>
-          <p className="text-slate-400 text-sm mb-6 max-w-md">
-            Plug a high-speed USB-C, USB4, or Thunderbolt cable directly between both laptops. ByteBridge operates exclusively over direct physical links.
-          </p>
-          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs rounded-lg p-3 flex items-start gap-2 mb-6 text-left">
-            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
-            <span>Note: Standard phone charging cables do not support high-speed data. Ensure you use a 10Gbps+ USB-C or Thunderbolt cable.</span>
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-[#EDEDED]">Connect USB-C Physical Cable</h2>
+            <p className="text-xs text-[#85858B] max-w-sm mx-auto leading-relaxed">
+              Connect a high-speed USB-C, USB4, or Thunderbolt cable directly between both laptops. ByteBridge streams exclusively over hardware point-to-point links.
+            </p>
           </div>
+
+          <div className="bg-[#19191B] border border-white/6 text-amber-300 text-xs rounded-xl p-3.5 flex items-start gap-2.5 text-left">
+            <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-400" />
+            <span className="text-[#A1A1A6] leading-relaxed">
+              Standard phone charging cables lack high-speed data lines. Ensure you use a verified 10Gbps+ USB-C, USB4, or Thunderbolt cable.
+            </span>
+          </div>
+
           <button
             onClick={() => setStep(2)}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-500 font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-medium text-xs text-white rounded-lg transition-colors flex items-center justify-center gap-2"
           >
-            <span>Cable Connected, Next</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Cable connected, proceed to pairing</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
       {step === 2 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 w-full shadow-2xl">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400">
-              <ShieldCheck className="w-6 h-6" />
+        <div className="bg-[#141415] border border-white/8 rounded-2xl p-7 w-full shadow-xl space-y-5">
+          <div className="flex items-center gap-3 pb-3 border-b border-white/6">
+            <div className="p-2 bg-[#19191B] border border-white/6 rounded-lg text-blue-400">
+              <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">Mutual Peer Verification</h2>
-              <p className="text-slate-400 text-xs">Verify the 6-digit Short Authentication String (SAS)</p>
+              <h2 className="text-sm font-medium text-[#EDEDED]">Mutual SAS Peer Verification</h2>
+              <p className="text-xs text-[#85858B]">Confirm 6-digit Short Authentication String to prevent MITM</p>
             </div>
           </div>
 
-          <p className="text-slate-300 text-sm mb-4">
-            Select the discovered peer laptop on your direct link:
-          </p>
-
-          <div className="space-y-3 mb-6">
+          <div className="space-y-2">
+            <div className="text-xs text-[#85858B] font-mono">Discovered link peers:</div>
             {discoveredPeers.length === 0 ? (
-              <div className="p-4 border border-slate-800 rounded-lg text-center text-slate-500 text-sm">
+              <div className="p-4 border border-white/6 rounded-xl bg-[#0F0F10] text-center text-[#85858B] text-xs">
                 Searching for peers over direct IPv6 Link-Local...
               </div>
             ) : (
@@ -88,21 +108,21 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({
                 <div
                   key={peer.id}
                   onClick={() => setSelectedPeer(peer)}
-                  className={`p-4 rounded-lg border cursor-pointer flex items-center justify-between transition-all ${
+                  className={`p-3 rounded-lg border cursor-pointer flex items-center justify-between transition-colors ${
                     selectedPeer?.id === peer.id
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-slate-800 bg-slate-800/50 hover:border-slate-700'
+                      ? 'border-blue-500/40 bg-blue-500/10'
+                      : 'border-white/6 bg-[#0F0F10] hover:border-white/12'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <Laptop className="w-5 h-5 text-blue-400" />
+                  <div className="flex items-center gap-2.5">
+                    <Laptop className="w-4 h-4 text-blue-400" />
                     <div>
-                      <div className="font-semibold text-sm">{peer.name}</div>
-                      <div className="text-xs font-mono text-slate-400">{peer.fingerprint.slice(0, 16)}...</div>
+                      <div className="font-medium text-xs text-[#EDEDED]">{peer.name}</div>
+                      <div className="text-[11px] font-mono text-[#85858B]">{peer.fingerprint.slice(0, 16)}...</div>
                     </div>
                   </div>
                   {peer.sas_code && (
-                    <div className="px-3 py-1 bg-blue-950 border border-blue-800 text-blue-300 font-mono font-bold text-sm rounded">
+                    <div className="px-2.5 py-1 bg-[#19191B] border border-white/8 text-blue-400 font-mono font-medium text-xs rounded">
                       SAS: {peer.sas_code}
                     </div>
                   )}
@@ -112,27 +132,35 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({
           </div>
 
           {selectedPeer && (
-            <div className="space-y-4 pt-2 border-t border-slate-800">
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Enter 6-digit code shown on peer screen:
-                </label>
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={enteredCode}
-                  onChange={(e) => setEnteredCode(e.target.value.trim())}
-                  placeholder="e.g. 849201"
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-center text-lg tracking-widest font-mono font-bold text-slate-100 focus:outline-none focus:border-blue-500"
-                />
+            <div className="space-y-3 pt-3 border-t border-white/6">
+              <label className="block text-xs text-[#85858B] text-center">
+                Enter matching 6-digit SAS shown on peer screen:
+              </label>
+
+              {/* Segmented 6-Digit Monospace Input */}
+              <div className="flex justify-center gap-2">
+                {sasDigits.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    id={`sas-digit-${idx}`}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleDigitChange(idx, e.target.value)}
+                    className="w-10 h-12 bg-[#0F0F10] border border-white/10 rounded-lg text-center font-mono text-lg font-semibold text-[#EDEDED] focus:outline-none focus:border-blue-500"
+                  />
+                ))}
               </div>
-              {error && <p className="text-red-400 text-xs">{error}</p>}
+
+              {error && <p className="text-[#E5484D] text-xs text-center">{error}</p>}
+
               <button
                 onClick={handleSasSubmit}
-                disabled={enteredCode.length !== 6}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold rounded-lg transition-colors"
+                disabled={sasDigits.join('').length !== 6}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 font-medium text-xs text-white rounded-lg transition-colors mt-2"
               >
-                Confirm & Pair
+                Confirm pairing
               </button>
             </div>
           )}
@@ -140,19 +168,21 @@ export const SetupWizard: React.FC<SetupWizardProps> = ({
       )}
 
       {step === 3 && (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-8 w-full shadow-2xl flex flex-col items-center text-center">
-          <div className="p-4 bg-emerald-500/10 rounded-2xl mb-4 text-emerald-400">
-            <CheckCircle2 className="w-12 h-12" />
+        <div className="bg-[#141415] border border-white/8 rounded-2xl p-7 w-full shadow-xl text-center space-y-5">
+          <div className="w-12 h-12 mx-auto rounded-xl bg-[#4CC38A]/10 border border-[#4CC38A]/20 flex items-center justify-center text-[#4CC38A]">
+            <Check className="w-5 h-5" />
           </div>
-          <h2 className="text-xl font-bold mb-2">Direct Link Authenticated</h2>
-          <p className="text-slate-400 text-sm mb-6 max-w-md">
-            The encrypted session key has been verified against peer fingerprint. Files can now be transferred securely at full hardware capability.
-          </p>
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-[#EDEDED]">Direct Link Authenticated</h2>
+            <p className="text-xs text-[#85858B] max-w-sm mx-auto leading-relaxed">
+              Encrypted session keys verified. Transfers can now execute securely at full hardware capability.
+            </p>
+          </div>
           <button
             onClick={onComplete}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 font-semibold rounded-lg transition-colors"
+            className="w-full py-2.5 bg-[#4CC38A] hover:bg-[#45B37D] font-medium text-xs text-[#0F0F10] font-semibold rounded-lg transition-colors"
           >
-            Go to Dashboard
+            Go to dashboard
           </button>
         </div>
       )}

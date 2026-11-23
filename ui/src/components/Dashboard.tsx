@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { DirectLinkStatus, PeerDevice, DeviceInfo } from '../api';
-import { Laptop, Send, Shield, Zap, UploadCloud, CheckCircle } from 'lucide-react';
+import { Laptop, Send, Shield, Zap, UploadCloud, Check, X, File, HardDrive } from 'lucide-react';
 
 interface DashboardProps {
   deviceInfo: DeviceInfo | null;
@@ -26,99 +26,104 @@ export const Dashboard: React.FC<DashboardProps> = ({
   ]);
 
   return (
-    <div className="flex flex-col h-full p-6 text-slate-100 max-w-5xl mx-auto space-y-6">
-      {/* Top Bar: Device & Link Status */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Local Device */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+    <div className="flex flex-col h-full p-8 max-w-5xl mx-auto space-y-6 text-[#EDEDED] font-sans antialiased">
+      {/* Top Telemetry Header */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {/* Local Device Identity */}
+        <div className="bg-[#141415] border border-white/8 rounded-xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-blue-500/10 rounded-lg text-blue-400">
-              <Laptop className="w-5 h-5" />
+            <div className="p-2 bg-[#19191B] border border-white/6 rounded-lg text-[#EDEDED]">
+              <Laptop className="w-4 h-4 text-blue-400" />
             </div>
             <div>
-              <div className="text-xs text-slate-400">This Device</div>
-              <div className="font-semibold text-sm">{deviceInfo?.name || 'Local Laptop'}</div>
+              <div className="text-[11px] text-[#85858B] uppercase tracking-wider font-mono">This Host</div>
+              <div className="font-medium text-sm text-[#EDEDED]">{deviceInfo?.name || 'Local Laptop'}</div>
             </div>
           </div>
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono uppercase">
+          <span className="text-[11px] px-2 py-0.5 rounded bg-[#19191B] border border-white/6 text-[#A1A1A6] font-mono">
             {deviceInfo?.os || 'OS'}
           </span>
         </div>
 
-        {/* Physical Link Status */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        {/* Physical Direct Link */}
+        <div className="bg-[#141415] border border-white/8 rounded-xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-lg ${linkStatus?.connected ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-              <Zap className="w-5 h-5" />
+            <div className={`p-2 rounded-lg border ${
+              linkStatus?.connected 
+                ? 'bg-[#4CC38A]/10 text-[#4CC38A] border-[#4CC38A]/20' 
+                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+            }`}>
+              <Zap className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs text-slate-400">Direct Link</div>
-              <div className="font-semibold text-sm">
-                {linkStatus?.connected ? linkStatus.adapter_name : 'No Link Detected'}
+              <div className="text-[11px] text-[#85858B] uppercase tracking-wider font-mono">Direct Cable Link</div>
+              <div className="font-medium text-sm text-[#EDEDED] truncate max-w-[140px]">
+                {linkStatus?.connected ? linkStatus.adapter_name : 'No Link'}
               </div>
             </div>
           </div>
           <div className="text-right">
-            <div className={`text-xs font-bold ${linkStatus?.connected ? 'text-emerald-400' : 'text-amber-400'}`}>
+            <div className={`text-[11px] font-mono font-medium ${linkStatus?.connected ? 'text-[#4CC38A]' : 'text-amber-400'}`}>
               {linkStatus?.connected ? 'CONNECTED' : 'STANDBY'}
             </div>
-            <div className="text-xs font-mono text-slate-400">
-              {linkStatus?.link_speed_gbps || 'Unknown / Not exposed by hardware or OS'}
+            <div className="text-[11px] font-mono text-[#85858B]">
+              {linkStatus?.link_speed_gbps || 'Unknown'}
             </div>
           </div>
         </div>
 
-        {/* Security & Settings */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+        {/* Noise IK Channel State */}
+        <div className="bg-[#141415] border border-white/8 rounded-xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-indigo-500/10 rounded-lg text-indigo-400">
-              <Shield className="w-5 h-5" />
+            <div className="p-2 bg-[#19191B] border border-white/6 rounded-lg text-[#EDEDED]">
+              <Shield className="w-4 h-4 text-emerald-400" />
             </div>
             <div>
-              <div className="text-xs text-slate-400">Security State</div>
-              <div className="font-semibold text-sm">Noise_IK Encrypted</div>
+              <div className="text-[11px] text-[#85858B] uppercase tracking-wider font-mono">Channel Security</div>
+              <div className="font-medium text-sm text-[#EDEDED]">Noise_IK Mutual</div>
             </div>
           </div>
           <button
             onClick={onOpenSettings}
-            className="text-xs px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-medium transition-colors"
+            className="text-xs px-3 py-1.5 bg-[#19191B] hover:bg-[#232325] text-[#EDEDED] border border-white/8 rounded-lg font-medium transition-colors"
           >
-            Preferences
+            Settings
           </button>
         </div>
       </div>
 
-      {/* Main Transfer Workspace */}
+      {/* Main Staging & Selection Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
         {/* Peer Selection (Left Col) */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+        <div className="bg-[#141415] border border-white/8 rounded-xl p-5 flex flex-col justify-between">
           <div>
-            <h3 className="font-semibold text-sm text-slate-300 mb-3 flex items-center gap-2">
-              <Laptop className="w-4 h-4 text-blue-400" />
-              Target Direct Peer
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-mono uppercase tracking-wider text-[#85858B]">Target Peer</h2>
+              <span className="text-[11px] font-mono text-[#85858B]">{peers.length} discovered</span>
+            </div>
+
             <div className="space-y-2">
               {peers.length === 0 ? (
-                <div className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-500 text-center">
-                  No direct peer connected. Connect cable and verify SAS.
+                <div className="p-4 rounded-lg bg-[#0F0F10] border border-white/6 text-xs text-[#85858B] text-center">
+                  Searching for peers over direct IPv6 Link-Local...
                 </div>
               ) : (
                 peers.map((peer) => (
                   <div
                     key={peer.id}
                     onClick={() => setSelectedPeerId(peer.id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                       selectedPeerId === peer.id
-                        ? 'border-blue-500 bg-blue-500/10'
-                        : 'border-slate-800 bg-slate-950 hover:border-slate-700'
+                        ? 'border-blue-500/40 bg-blue-500/10'
+                        : 'border-white/6 bg-[#0F0F10] hover:border-white/12'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-sm">{peer.name}</span>
-                      {peer.paired && <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />}
+                      <span className="font-medium text-sm text-[#EDEDED]">{peer.name}</span>
+                      {peer.paired && <Check className="w-3.5 h-3.5 text-[#4CC38A]" />}
                     </div>
-                    <div className="text-xs font-mono text-slate-400 mt-1">
-                      {peer.fingerprint.slice(0, 12)}...
+                    <div className="text-[11px] font-mono text-[#85858B] mt-1">
+                      {peer.fingerprint.slice(0, 16)}...
                     </div>
                   </div>
                 ))
@@ -126,58 +131,59 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 space-y-2">
+          <div className="pt-4 border-t border-white/6 space-y-2">
             <button
               onClick={onRunMockDemo}
-              className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-blue-300 text-xs font-semibold rounded-lg transition-colors border border-blue-900/40"
+              className="w-full py-2.5 bg-[#19191B] hover:bg-[#232325] text-xs font-mono text-[#A1A1A6] hover:text-[#EDEDED] rounded-lg transition-colors border border-white/6 flex items-center justify-center gap-2"
             >
-              Run In-Process Benchmark (50 MB)
+              <HardDrive className="w-3.5 h-3.5 text-[#85858B]" />
+              <span>Run mock benchmark (50 MB)</span>
             </button>
           </div>
         </div>
 
-        {/* File Queue & Drag Drop (Right 2 Cols) */}
-        <div className="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+        {/* File Queue & Drag Drop Area (Right 2 Cols) */}
+        <div className="md:col-span-2 bg-[#141415] border border-white/8 rounded-xl p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-sm text-slate-300 flex items-center gap-2">
-                <UploadCloud className="w-4 h-4 text-blue-400" />
-                Files to Transfer
-              </h3>
-              <span className="text-xs text-slate-400">{simulatedFiles.length} files queued</span>
+              <h2 className="text-xs font-mono uppercase tracking-wider text-[#85858B]">Staged payload</h2>
+              <span className="text-[11px] font-mono text-[#85858B]">{simulatedFiles.length} items ready</span>
             </div>
 
-            {/* Drop Zone Box */}
-            <div className="border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-slate-950/50">
-              <UploadCloud className="w-10 h-10 text-slate-500 mb-2" />
-              <p className="text-sm font-medium text-slate-300">Drag and drop files or folders here</p>
-              <p className="text-xs text-slate-500 mt-1">Direct unbuffered disk streaming over direct link</p>
+            {/* Recessed Desktop Drop Tray */}
+            <div className="border border-white/8 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-[#0F0F10] hover:border-white/16">
+              <UploadCloud className="w-8 h-8 text-[#85858B] mb-2" />
+              <div className="text-sm font-medium text-[#EDEDED]">Drop files or directory trees here</div>
+              <p className="text-xs text-[#85858B] mt-0.5 font-mono">Direct unbuffered stream over link</p>
             </div>
 
-            {/* Selected File List */}
-            <div className="mt-4 space-y-2">
+            {/* File List */}
+            <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
               {simulatedFiles.map((file, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-xs">
-                  <span className="font-medium text-slate-300 truncate max-w-sm">{file}</span>
+                <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg bg-[#0F0F10] border border-white/6 text-xs">
+                  <div className="flex items-center gap-2 truncate">
+                    <File className="w-3.5 h-3.5 text-[#85858B] shrink-0" />
+                    <span className="font-mono text-[#EDEDED] truncate">{file}</span>
+                  </div>
                   <button
                     onClick={() => setSimulatedFiles(simulatedFiles.filter((_, i) => i !== idx))}
-                    className="text-slate-500 hover:text-red-400 font-bold ml-2"
+                    className="text-[#85858B] hover:text-[#E5484D] p-1 transition-colors"
                   >
-                    ×
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex justify-end">
+          <div className="pt-4 border-t border-white/6 flex justify-end">
             <button
               onClick={() => onStartTransfer(selectedPeerId, simulatedFiles)}
               disabled={!selectedPeerId || simulatedFiles.length === 0}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm rounded-lg flex items-center gap-2 shadow-lg shadow-blue-900/30 transition-all"
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed font-medium text-xs rounded-lg flex items-center gap-2 transition-colors text-white shadow-sm"
             >
-              <Send className="w-4 h-4" />
-              <span>Initiate Direct Transfer</span>
+              <Send className="w-3.5 h-3.5" />
+              <span>Initiate direct transfer</span>
             </button>
           </div>
         </div>
