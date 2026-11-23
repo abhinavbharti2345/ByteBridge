@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pruned mobile bundle targets and removed unnecessary iOS/Android icon assets, keeping repository footprint streamlined and focused on desktop laptops.
 
 ### Added - 2026-11-23
+- **Phase 5: Security Hardening & Threat Model Verification:**
+  - Implemented automated threat model integration test suite in `crates/bytebridge-core/tests/threat_model_test.rs`:
+    - Verified unpaired peers are rejected immediately with zero accepted file bytes.
+    - Verified pairing revocation removes public key material and immediately blocks subsequent connection attempts.
+    - Fuzzed receiver path sanitization against directory traversal (`../`, `..\`), root escapes, absolute paths, and Windows reserved device names (`CON`, `NUL`, `AUX`, `COM1`, `PRN`).
+    - Verified atomic file publishing replaces temporary `.bytebridge-partial` staging files with zero partial file leaks on abort or disk full.
+  - Completed security audit confirming production log calls contain zero user paths, file names, or private key material.
+  - **Verification:** Ran `cargo test --workspace` (22/22 tests passing across all crates and integration test suites).
 - **Phase 4: Smart Speed Engine & Bounded Benchmarks:**
   - Implemented `bytebridge-core::performance::benchmark` running safe, user-approved sequential read/write benchmarks with guaranteed temporary file cleanup via drop guards.
   - Implemented `BottleneckAnalyzer` and `BottleneckCause` with hysteresis smoothing, classifying transfer constraints: Source Disk, Destination Disk, Physical Link, or CPU/Crypto.
