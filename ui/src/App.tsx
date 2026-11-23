@@ -128,10 +128,8 @@ export default function App() {
     <div className="flex flex-col h-screen w-screen bg-[#0b0f19] text-slate-100 select-none">
       {/* App Header */}
       <header className="h-12 border-b border-slate-800/80 px-6 flex items-center justify-between bg-slate-950/40">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center font-bold text-xs text-white">
-            BB
-          </div>
+        <div className="flex items-center gap-2.5">
+          <img src="/app-icon.png" alt="ByteBridge" className="w-6 h-6 rounded-md object-contain" />
           <span className="font-bold text-sm tracking-wide">ByteBridge</span>
           <span className="text-[10px] text-slate-400 font-mono px-1.5 py-0.5 rounded bg-slate-800">
             v0.1.0
