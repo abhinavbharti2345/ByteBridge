@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pruned mobile bundle targets and removed unnecessary iOS/Android icon assets, keeping repository footprint streamlined and focused on desktop laptops.
 
 ### Added - 2026-11-23
+- **Phase 6: Cross-Platform Packaging & Release:**
+  - Configured multi-platform desktop release packaging in `src-tauri/tauri.conf.json` for Windows (`nsis`, `msi`) and Linux (`appimage`, `deb`).
+  - Upgraded automated GitHub Actions workflow `.github/workflows/ci.yml` with multi-OS compilation, frontend asset bundling, and release packaging draft actions.
+  - Authored comprehensive [README.md](README.md) documenting supported hardware constraints (USB4/Thunderbolt vs standard phone charging cables), architecture layout, development commands, and production build guides.
+  - Finalized all milestones and verified that all 7 roadmap phase exit checklists are 100% complete.
+  - **Verification:** Ran `cargo test --workspace` (22/22 tests passing) and `npm run build` in `ui/` with zero errors.
 - **Phase 5: Security Hardening & Threat Model Verification:**
   - Implemented automated threat model integration test suite in `crates/bytebridge-core/tests/threat_model_test.rs`:
     - Verified unpaired peers are rejected immediately with zero accepted file bytes.

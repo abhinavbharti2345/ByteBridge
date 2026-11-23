@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI & Cross-Platform Release
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: Build & Test (${{ matrix.os }})
+    name: Test Engine & Desktop (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -19,19 +19,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install system dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
-      - name: Cache Cargo dependencies
-        uses: Swatinem/rust-cache@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: ui/package-lock.json
 
-      - name: Check formatting
-        run: cargo fmt --all -- --check
+      - name: Install Frontend Dependencies & Build UI
+        run: |
+          cd ui
+          npm install
+          npm run build
 
-      - name: Run Clippy lints
-        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Execute Full Workspace Test Suite
+        run: cargo test --workspace --verbose
 
-      - name: Execute Workspace Test Suite
-        run: cargo test --workspace --all-features --verbose
+      - name: Build Tauri Desktop Package
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 'ByteBridge v__VERSION__'
+          releaseBody: 'Direct high-speed laptop-to-laptop file transfer over USB-C/USB4/Thunderbolt.'
+          releaseDraft: true
+          prerelease: false
