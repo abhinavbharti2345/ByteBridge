@@ -17,8 +17,11 @@ Thumbs.db
 
 # Internal agent tooling, skills, and graph cache
 .agents/
+.github/agents/
+.github/skills/
 skills-lock.json
 graphify-out/
+deny.toml
 
 # Internal planning and specification files (kept local)
 Docs/
