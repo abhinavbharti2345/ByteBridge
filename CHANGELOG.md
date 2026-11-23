@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added - 2026-11-23
+- **Phase 3: Hardware Link Analyzer & Redacted Diagnostics:**
+  - Implemented 5-tier hardware inspection abstraction in `bytebridge-core::hardware`:
+    1. Cable capability with explicit unknown detection (`"Unknown / Not exposed by hardware or OS"`).
+    2. USB/Thunderbolt host controller capability and bandwidth ceiling.
+    3. Negotiated physical link properties (medium, speed display, MTU, duplex, IPv6 Link-Local).
+    4. Measured transport throughput.
+    5. End-to-end file throughput and real-time bottleneck classification.
+  - Implemented `WindowsHardwareInspector` and `LinuxHardwareInspector` conforming to `HardwareInspector` trait.
+  - Implemented `RedactedDiagnosticReport` generator and unit test `test_redacted_diagnostic_report_privacy` ensuring zero usernames, personal paths, or secrets leak.
+  - Connected real hardware inspection to Tauri desktop commands (`get_device_status`, `get_link_diagnostics`, and `export_redacted_diagnostics`).
+  - Added unit test `test_hardware_analysis_generation` validating report generation and link metrics.
+  - **Verification:** Ran `cargo test --workspace` (14/14 tests passing across all crates).
 - **Phase 2: Desktop Shell & Modern React UI:**
   - Initialized and integrated `src-tauri` (Tauri 2) native desktop shell linking with `bytebridge-core`.
   - Configured Tauri backend command handlers across 4 core domains: `devices`, `transfers`, `settings`, and `diagnostics`.

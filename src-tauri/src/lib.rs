@@ -12,6 +12,7 @@ pub fn run() {
             commands::settings::get_performance_policy,
             commands::settings::set_performance_mode,
             commands::diagnostics::get_link_diagnostics,
+            commands::diagnostics::export_redacted_diagnostics,
         ])
         .run(tauri::generate_context!())
         .expect("error while running ByteBridge desktop application");

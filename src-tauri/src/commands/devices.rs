@@ -1,3 +1,4 @@
+use bytebridge_core::hardware::create_default_inspector;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,22 +18,26 @@ pub struct PairingSessionResponse {
 
 #[tauri::command]
 pub fn get_device_status() -> Result<DeviceStatusResponse, String> {
+    let inspector = create_default_inspector();
+    let report = inspector.generate_analysis_report().map_err(|e| e.to_string())?;
+
+    let is_connected = report.connection_status == bytebridge_core::hardware::ConnectionStatus::Connected;
+
     Ok(DeviceStatusResponse {
         local_device_name: whoami_host(),
-        connection_state: "Connected".to_string(),
-        active_interface: Some("Thunderbolt(TM) Networking (Direct Link)".to_string()),
-        paired_devices_count: 1,
-        is_wizard_required: false,
+        connection_state: if is_connected { "Connected".to_string() } else { "Disconnected".to_string() },
+        active_interface: Some(report.negotiated_link.interface_name),
+        paired_devices_count: if is_connected { 1 } else { 0 },
+        is_wizard_required: !is_connected,
     })
 }
 
 #[tauri::command]
 pub fn initiate_pairing() -> Result<PairingSessionResponse, String> {
-    // Generate pairing verification code
     let fake_hash = [13u8; 32];
     let sas = bytebridge_core::security::derive_sas_code(&fake_hash);
     Ok(PairingSessionResponse {
-        peer_device_name: "Target Laptop".to_string(),
+        peer_device_name: "Direct Peer Laptop".to_string(),
         verification_code: sas,
     })
 }
@@ -44,7 +49,7 @@ pub fn confirm_pairing() -> Result<(), String> {
 
 #[tauri::command]
 pub fn revoke_device(device_name: String) -> Result<(), String> {
-    println!("Revoked pairing for device: {}", device_name);
+    tracing::info!("Revoked pairing for device: {}", device_name);
     Ok(())
 }
 
