@@ -11,6 +11,7 @@ pub fn run() {
             commands::transfers::start_mock_transfer,
             commands::settings::get_performance_policy,
             commands::settings::set_performance_mode,
+            commands::settings::run_storage_benchmark,
             commands::diagnostics::get_link_diagnostics,
             commands::diagnostics::export_redacted_diagnostics,
         ])

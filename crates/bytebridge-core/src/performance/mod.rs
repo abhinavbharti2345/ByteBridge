@@ -1,3 +1,9 @@
+pub mod benchmark;
+pub mod bottleneck;
+
+pub use benchmark::{run_bounded_storage_benchmark, BenchmarkReport};
+pub use bottleneck::{BottleneckAnalyzer, BottleneckCause};
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]

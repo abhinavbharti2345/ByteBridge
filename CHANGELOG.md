@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pruned mobile bundle targets and removed unnecessary iOS/Android icon assets, keeping repository footprint streamlined and focused on desktop laptops.
 
 ### Added - 2026-11-23
+- **Phase 4: Smart Speed Engine & Bounded Benchmarks:**
+  - Implemented `bytebridge-core::performance::benchmark` running safe, user-approved sequential read/write benchmarks with guaranteed temporary file cleanup via drop guards.
+  - Implemented `BottleneckAnalyzer` and `BottleneckCause` with hysteresis smoothing, classifying transfer constraints: Source Disk, Destination Disk, Physical Link, or CPU/Crypto.
+  - Implemented dynamic parameter policies for Minimal (512 KiB / depth 2), Adaptive (1 MiB / depth 4), and Maximum (8 MiB / depth 12 / Direct I/O).
+  - Exposed `run_storage_benchmark` command to Tauri desktop backend shell.
+  - Added unit tests `test_bounded_storage_benchmark_and_cleanup`, `test_bottleneck_classification_destination_disk`, and `test_bottleneck_classification_link_saturation`.
+  - **Verification:** Ran `cargo test --workspace` (17/17 tests passing across core and integration suites).
 - **Phase 3: Hardware Link Analyzer & Redacted Diagnostics:**
   - Implemented 5-tier hardware inspection abstraction in `bytebridge-core::hardware`:
     1. Cable capability with explicit unknown detection (`"Unknown / Not exposed by hardware or OS"`).
