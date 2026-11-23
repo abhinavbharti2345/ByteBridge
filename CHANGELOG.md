@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added - 2026-11-23
+- **Phase 2: Desktop Shell & Modern React UI:**
+  - Initialized and integrated `src-tauri` (Tauri 2) native desktop shell linking with `bytebridge-core`.
+  - Configured Tauri backend command handlers across 4 core domains: `devices`, `transfers`, `settings`, and `diagnostics`.
+  - Implemented automatic generation of cross-platform desktop icons in `src-tauri/icons/` using `@tauri-apps/cli`.
+  - Scaffolded React 19 + TypeScript (strict) frontend in `ui/` powered by Vite and Tailwind CSS v4.
+  - Implemented typed asynchronous IPC client in `ui/src/api.ts` connecting the frontend to Tauri backend commands with graceful preview fallback.
+  - Created 4 high-fidelity desktop views adhering to the §11 native desktop style:
+    - `SetupWizard.tsx`: Step-by-step physical cable check, IPv6 link-local peer discovery, and 6-digit Short Authentication String (SAS) code entry.
+    - `Dashboard.tsx`: Hardware link status bar, local device badge, peer selector, queued file list, and drag-and-drop dropzone.
+    - `TransferScreen.tsx`: Real-time transfer metrics (progress bar, MB/s throughput, ETA, active file stream, and bottleneck diagnostic indicator).
+    - `SettingsModal.tsx`: Performance mode selector (Minimal, Adaptive, Maximum), default download path, and trust store auto-accept toggle.
+  - Added in-process benchmark trigger directly from the desktop UI to validate 50 MB transfers end-to-end.
+  - **Verification:** Ran `cargo test --workspace` (all 12 unit/integration tests passing) and `npm run build` in `ui/` (0 TypeScript or bundle errors).
 - **Phase 1: Streaming Transfer Engine & Resumption:**
   - Implemented `Sender` pipeline streaming files in configurable chunks (default: 64 KiB to 4 MiB) with per-chunk hashing and `ChunkAck` flow control.
   - Implemented `Receiver` pipeline verifying incoming chunks, staging them in `.bytebridge-partial` files, validating whole-file hashes (SHA-256 or BLAKE3), and atomically renaming to target destinations.
