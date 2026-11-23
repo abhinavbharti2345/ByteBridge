@@ -11,6 +11,7 @@ import { SetupWizard } from './components/SetupWizard';
 import { Dashboard } from './components/Dashboard';
 import { TransferScreen } from './components/TransferScreen';
 import { SettingsModal } from './components/SettingsModal';
+import { HardwareAnalyzer } from './components/HardwareAnalyzer';
 
 export default function App() {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
@@ -19,7 +20,7 @@ export default function App() {
   const [activeTransfer, setActiveTransfer] = useState<TransferProgress | null>(null);
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [view, setView] = useState<'wizard' | 'dashboard' | 'transfer'>('dashboard');
+  const [view, setView] = useState<'wizard' | 'dashboard' | 'transfer' | 'analyzer'>('dashboard');
 
   useEffect(() => {
     // Initial fetch of system info and settings
@@ -152,6 +153,14 @@ export default function App() {
           >
             Dashboard
           </button>
+          <button
+            onClick={() => setView('analyzer')}
+            className={`text-xs px-2.5 py-1 rounded transition-colors ${
+              view === 'analyzer' ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Hardware Analyzer
+          </button>
         </div>
       </header>
 
@@ -180,6 +189,9 @@ export default function App() {
             onCancel={handleCancelTransfer}
             onBackToDashboard={() => setView('dashboard')}
           />
+        )}
+        {view === 'analyzer' && (
+          <HardwareAnalyzer onBack={() => setView('dashboard')} />
         )}
       </main>
 
