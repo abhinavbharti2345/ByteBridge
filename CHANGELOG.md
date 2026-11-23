@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - 2026-11-23
+- **Security Audit Tooling & Dependency Verification:**
+  - Installed and verified `cargo-audit v0.23.0`, `cargo-deny v0.21.0`, and `cargo-geiger v0.13.0` for automated dependency vulnerability and unsafe code governance.
+  - Configured `deny.toml` with strict advisory enforcement, bans on weak cryptos (`md5`, `sha1`, `rc4`), unknown git/registry restrictions, and explicit allowable license expressions (`MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `0BSD`, `ISC`, `CC0-1.0`, `Unicode-3.0`, `Unicode-DFS-2016`, `OpenSSL`, `Zlib`, `Unlicense`, `MPL-2.0`).
+  - Executed `cargo audit` verifying zero unpatched vulnerabilities in workspace code across 1562 advisories.
+  - Executed `cargo deny check` with zero policy violations (`advisories ok, bans ok, licenses ok, sources ok`).
+  - Executed `cargo geiger` on `bytebridge-core` confirming zero custom unsafe code in security, protocol, and storage layers.
+- **Frontend Craft & Unslopping Polish Pass:**
+  - Applied Unslop craft principles across all frontend components in `ui/src/components/`:
+    - `TransferScreen.tsx`: Monospace tabular layout, dual-track precision progress indicator, hysteresis bottleneck badge, and quiet metric typography.
+    - `HardwareAnalyzer.tsx`: 5-tier diagnostic inspection hierarchy and redacted JSON export button.
+    - `Dashboard.tsx`: Aligned to Graphite neutral ramp (`#141415`, `#19191B`, `#0F0F10`), recessed desktop drop tray, and structured peer selection.
+    - `SetupWizard.tsx`: Quiet segmented progress bar (`01 Physical Cable / 02 SAS Pairing / 03 Verified`) and 6-box segmented numeric input with auto-advance for SAS verification.
+    - `SettingsModal.tsx`: Tactile segmented transfer policy selector (Minimal, Adaptive, Maximum) and tactile switches.
+  - **Verification:** `tsc -b && vite build` built in 757ms; 22/22 workspace unit and threat model tests passing.
+
 ### Changed - 2026-11-23
 - **Platform Target Alignment:**
   - Configured Tauri bundle configuration strictly for desktop targets: Windows (`nsis`, `msi`) as 1st priority and Linux (`deb`, `appimage`) as 2nd priority.
